@@ -1,18 +1,41 @@
 <style type="text/css">
-	body {
-		font-size: 14px;
-		margin: 0;
-	}
 	table {
 		width: 100%;
-		height: 100%;
+		font-size: 14px;
+	}
+	#cover {
+		max-width: 270px;
+		max-height: 270px;
+		margin-right: 10px;
+	}
+	td.label {
+		font-weight: bold;
+		padding-right: 10px;
+		vertical-align: top;
 	}
 </style>
 
 <table>
-	<tr><td colspan=2 align=center height=1><i>${name}</i></td></tr>
-	<tr><td height=1 align=right width=1><b>Title</b></td><td>${title}</tr>
-	<tr><td height=1 align=right width=1><b>Artist</b></td><td>${artist}</tr>
-	<tr><td colspan=2><img src="${image}"></td></tr>
-	<tr><td colspan=2 height=1 align=center>Are you sure you want to add this song?</td></tr>
+	<tr>
+		<td rowspan=6 width=1 height=270><img id="cover" src="${image}"></td>
+		<td height=1 align=right width=1 class="label">Title</td>
+		<td>${title}</td>
+	</tr>
+	<tr>
+		<td height=1 align=right width=1 class="label">Artist</td>
+		<td>${artist}</td>
+	</tr>
+	<tr>
+		<td height=1 align=right width=1 class="label">Creator</td>
+		<td>${creator}</td>
+	</tr>
+	<tr>
+		<td height=1 align=right width=1 class="label">Language</td>
+		<td>${language}</td>
+	</tr>
+	<tr>
+		<td height=1 align=right width=1 class="label">Song File</td>
+		<td>${songpath}</td>
+	</tr>
+	<tr><td colspan=2 align=right valign=bottom>Do you want to add this song?</td></tr>
 </table>
