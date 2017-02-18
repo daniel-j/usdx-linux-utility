@@ -8,26 +8,12 @@ if [ ! -e "$input" ]; then
 	exit 1
 fi
 
-songs=$(tar -tf "$input" | sort | grep -i "\.txt$")
-
-if [[ $? -ne 0 ]]; then
-	zenity --error --text="Could not read tar archive\n$input"
-	exit 1
-fi
-
-songcount=$(wc -l <<< "$songs")
-
-if [[ $songcount -lt 1 ]]; then
-	zenity --error --text="No songs found"
-	exit 1
-fi
-
 escapehtml() {
 	sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' <<< "$1"
 }
 
 add_one() {
-	songpath="$songs"
+	songpath="${songs[0]}"
 	list="$songpath"
 	load_song "$songpath"
 	if [ ! -z "$cover" ]; then
@@ -39,19 +25,19 @@ add_one() {
 	artist=$(escapehtml "$artist")
 	creator=$(escapehtml "$creator")
 	language=$(escapehtml "$language")
-	songpath=$(escapehtml "$songs")
+	songpath=$(escapehtml "$songpath")
 	eval "echo \"$(< ./prompt.html)\"" | zenity --text-info --title="Add song from \"$simplename\"" --filename=/dev/stdin --html --width=850 --height=350
 }
 
 add_many() {
 	declare -a data
 
-	while read -r songpath
+	for songpath in "${songs[@]}"
 	do
 		load_song "$songpath"
 
 		data+=("TRUE" "$songpath" "$title" "$artist" "$creator" "$language")
-	done <<< "$songs"
+	done
 	list=$(zenity --list --checklist --title="Add songs from \"$simplename\"" --width=800 --height=350 --separator='\n' --column="" --column="Song file" --column="Title" --column="Artist" --column="Creator" --column="Language" "${data[@]}")
 }
 
@@ -67,6 +53,28 @@ load_song() {
 	video=$(echo "$song" | grep "^#VIDEO:" | cut -c 8- | tr -d '\r\n')
 	background=$(echo "$song" | grep "^#BACKGROUND:" | cut -c 13- | tr -d '\r\n')
 }
+
+txtfiles=$(tar -tf "$input" | sort | grep -i "\.txt$")
+
+if [[ $? -ne 0 ]]; then
+	zenity --error --text="Could not read tar archive\n$input"
+	exit 1
+fi
+
+declare -a songs
+
+while read -r txtpath
+do
+	song=$(tar -xf "$input" "$txtpath" -O | grep -E '^#TITLE:|^#ARTIST:' | wc -l)
+	if [[ $song -eq 2 ]]; then songs+=("$txtpath"); fi
+done <<< "$txtfiles"
+
+songcount=${#songs[@]}
+
+if [[ $songcount -lt 1 ]]; then
+	zenity --error --text="No songs found"
+	exit 1
+fi
 
 if [[ $songcount -eq 1 ]]; then
 	add_one
