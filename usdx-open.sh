@@ -102,3 +102,6 @@ do
 	if [ ! -z "$background" ]; then files+=("$directory/$background"); fi
 	tar -xvf "$input" -C "$outdir" "${files[@]}"
 done <<< "$list"
+
+zenity --question --text="Do you want to delete the song archive?\n$input" --title="Delete song archive?"
+if [[ $? -eq 0 ]]; then rm "$input"; fi
