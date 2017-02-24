@@ -1,0 +1,4 @@
+[Thumbnailer Entry]
+TryExec=convert
+Exec=usdx-thumbnailer %s %u %o
+MimeType=application/x-tar-mlk;

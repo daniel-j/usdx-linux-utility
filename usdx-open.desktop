@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=UltraStar Deluxe Manager
+Comment=Open UltraStar Deluxe archives
+Exec=env DATA_DIR=/usr/share/ultrastardx-manager /usr/bin/usdx-open
+Type=Application
+StartupNotify=true
+Categories=Game;Utility;
+MimeType=application/x-tar-mlk;
+Icon=application-x-tar
+NoDisplay=true

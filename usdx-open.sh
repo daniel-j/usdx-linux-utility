@@ -2,15 +2,17 @@
 
 input="$1"
 simplename="$(basename "$input")"
-
-if [ ! -e "$input" ]; then
-	zenity --error --text="File does not exist\n$input"
-	exit 1
-fi
+datadir="."
+if [ ! -z "$DATA_DIR" ]; then datadir="$DATA_DIR"; fi
 
 escapehtml() {
 	sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' <<< "$1"
 }
+
+if [ ! -e "$input" ]; then
+	zenity --error --text="$(escapehtml "File does not exist\n$input")"
+	exit 1
+fi
 
 add_one() {
 	songpath="${songs[0]}"
@@ -26,7 +28,7 @@ add_one() {
 	creator=$(escapehtml "$creator")
 	language=$(escapehtml "$language")
 	songpath=$(escapehtml "$songpath")
-	eval "echo \"$(< ./prompt.html)\"" | zenity --text-info --title="Add song from \"$simplename\"" --filename=/dev/stdin --html --width=850 --height=350
+	eval "echo \"$(< "$datadir/prompt.html")\"" | zenity --text-info --title="Add song" --filename=/dev/stdin --html --width=850 --height=350
 }
 
 add_many() {
@@ -38,7 +40,7 @@ add_many() {
 
 		data+=("TRUE" "$songpath" "$title" "$artist" "$creator" "$language")
 	done
-	list=$(zenity --list --checklist --title="Add songs from \"$simplename\"" --width=800 --height=350 --separator='\n' --column="" --column="Song file" --column="Title" --column="Artist" --column="Creator" --column="Language" "${data[@]}")
+	list=$(zenity --list --checklist --title="Select songs to add" --width=800 --height=350 --separator='\n' --column="" --column="Song file" --column="Title" --column="Artist" --column="Creator" --column="Language" "${data[@]}")
 }
 
 load_song() {
@@ -57,7 +59,7 @@ load_song() {
 txtfiles=$(tar -tf "$input" | sort | grep -i "\.txt$")
 
 if [[ $? -ne 0 ]]; then
-	zenity --error --text="Could not read tar archive\n$input"
+	zenity --error --text="$(escapehtml "Could not read tar archive\n$input")"
 	exit 1
 fi
 
@@ -90,7 +92,7 @@ while read -r songpath
 do
 	load_song "$songpath"
 	if [ -e "$outdir/$songpath" ]; then
-		zenity --question --text="This song already exists. Do you want to overwrite it?\n\n$artist - $title\n\n$outdir/$songpath" --title="Overwrite song?"
+		zenity --question --text="$(escapehtml "This song already exists. Do you want to overwrite it?\n\n$artist - $title\n\n$outdir/$songpath")" --title="Overwrite song?"
 		if [[ $? -ne 0 ]]; then continue; fi
 	fi
 	mkdir -pv "$outdir"
@@ -103,5 +105,5 @@ do
 	tar -xvf "$input" -C "$outdir" "${files[@]}"
 done <<< "$list"
 
-zenity --question --text="Do you want to delete the song archive?\n$input" --title="Delete song archive?"
+zenity --question --text="$(escapehtml "Do you want to delete the song archive?\n$input")" --title="Delete song archive?"
 if [[ $? -eq 0 ]]; then rm "$input"; fi
