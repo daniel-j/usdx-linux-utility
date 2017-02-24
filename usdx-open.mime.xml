@@ -1,9 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
-  <mime-type type="application/x-tar-mlk">
+  <mime-type type="application/x-tar-usdx">
     <alias type="application/x-tar"/>
     <comment>UltraStar Deluxe package</comment>
     <icon name="application-x-tar"/>
+    <glob pattern="*.usdx"/>
     <glob pattern="*.tar.mlk"/>
   </mime-type>
 </mime-info>
