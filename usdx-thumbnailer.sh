@@ -34,7 +34,7 @@ declare -A covers
 
 while read -r txtpath
 do
-	song=$(tar -xf "$input" "$txtpath" -O | grep -E '^#TITLE:|^#ARTIST:' | wc -l)
+	song=$(tar -xf "$input" "$txtpath" -O | sed -e '1s/^\xef\xbb\xbf//' | grep -E '^#TITLE:|^#ARTIST:' | wc -l)
 	if [[ $song -eq 2 ]]; then
 		load_song "$txtpath"
 		if [ ! -z "$cover" ]; then

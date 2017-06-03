@@ -44,7 +44,7 @@ add_many() {
 }
 
 load_song() {
-	song=$(tar -xf "$input" "$1" -O)
+	song=$(tar -xf "$input" "$1" -O | sed -e '1s/^\xef\xbb\xbf//')
 	directory=$(dirname "$1")
 	title=$(echo "$song" | grep "^#TITLE:" | cut -c 8- | tr -d '\r\n')
 	artist=$(echo "$song" | grep "^#ARTIST:" | cut -c 9- | tr -d '\r\n')
@@ -67,7 +67,7 @@ declare -a songs
 
 while read -r txtpath
 do
-	song=$(tar -xf "$input" "$txtpath" -O | grep -E '^#TITLE:|^#ARTIST:' | wc -l)
+	song=$(tar -xf "$input" "$txtpath" -O | sed -e '1s/^\xef\xbb\xbf//' | grep -E '^#TITLE:|^#ARTIST:' | wc -l)
 	if [[ $song -eq 2 ]]; then songs+=("$txtpath"); fi
 done <<< "$txtfiles"
 
